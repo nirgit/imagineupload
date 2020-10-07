@@ -67,22 +67,20 @@ function translateAndRotate(
 }
 
 async function uploadImageToServer(imageBlob, callback) {
-    var byteBuffer = imageBlob.arrayBuffer().then(async (bytes) => {
-        var mimeType = "image/jpeg"
+    var fd = new FormData()
+    fd.append('img_data', imageBlob)
 
-        const response = await fetch('http://localhost:3000/u', {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': mimeType,
-                'Content-length': imageBlob.size
-            },
-            body: bytes
-        })
-        callback(response)
+    const response = await fetch('http://localhost:3000/u', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+            'Content-length': imageBlob.size
+        },
+        body: fd
     })
+    callback(response)
 }
 
 function uploadDoneCallback(response) {
