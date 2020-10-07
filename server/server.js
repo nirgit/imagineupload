@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 
 app.use(express.static('static'))
+app.use('/uploads', express.static('uploads'))
 
 app.get('/', (req, res) => {
   res.sendFile('/static/index.html')
