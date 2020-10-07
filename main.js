@@ -1,10 +1,16 @@
+var getCanvas = () => document.getElementById("board")
+
+function convertCanvasImageToBlob(callback) {
+    getCanvas().toBlob(callback, "image/jpeg");
+}
+
 function rotateImage(dataURL, degrees, callback) {
     var image = new Image();
 
     image.src = dataURL;
     image.onload =
         (event) => {
-            var canvas = document.getElementById("board")
+            var canvas = getCanvas()
             var context = canvas.getContext('2d');
 
             context.save();
@@ -60,6 +66,28 @@ function translateAndRotate(
     context.rotate(rotationRadians);
 }
 
+async function uploadImageToServer(imageBlob, callback) {
+    var byteBuffer = imageBlob.arrayBuffer().then(async (bytes) => {
+        var mimeType = "image/jpeg"
+
+        const response = await fetch('/u', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': mimeType,
+                'Content-length': imageBlob.size
+            },
+            body: bytes
+        })
+        callback(response)
+    })
+}
+
+function uploadDoneCallback(response) {
+    console.log(response)
+}
 
 var photo = document.getElementById("photo")
 var fileinput = document.getElementById("fp")
@@ -71,6 +99,9 @@ reader.addEventListener("loadend", e => {
     rotateImage(imageAsDataURL, parseInt(rotDegInput.value, 10), ri => {
         // console.log(ri)
         photo.src = ri
+        convertCanvasImageToBlob(imageBlob => {
+            uploadImageToServer(imageBlob, uploadDoneCallback)
+        })
     })
 })
 
