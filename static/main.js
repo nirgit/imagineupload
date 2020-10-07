@@ -70,7 +70,7 @@ async function uploadImageToServer(imageBlob, callback) {
     var byteBuffer = imageBlob.arrayBuffer().then(async (bytes) => {
         var mimeType = "image/jpeg"
 
-        const response = await fetch('/u', {
+        const response = await fetch('http://localhost:3000/u', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
