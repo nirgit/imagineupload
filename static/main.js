@@ -1,15 +1,23 @@
-var getCanvas = () => document.getElementById("board")
+function getCanvas() {
+    return document.getElementById("board")
+}
 
 function convertCanvasImageToBlob(callback) {
     getCanvas().toBlob(callback, "image/jpeg");
 }
 
-function rotateImage(dataURL, degrees, callback) {
-    var image = new Image();
+function getExifRotation(imageDataURL) {
 
+}
+
+function rotateImage(dataURL, degrees, supportExif, callback) {
+    var image = new Image();
+    if (supportExif) {
+        degrees = getExifRotation(dataURL)
+    }
     image.src = dataURL;
     image.onload =
-        (event) => {
+        function (event) {
             var canvas = getCanvas()
             var context = canvas.getContext('2d');
 
@@ -66,11 +74,11 @@ function translateAndRotate(
     context.rotate(rotationRadians);
 }
 
-async function uploadImageToServer(imageBlob, callback) {
+function uploadImageToServer(imageBlob, callback) {
     var fd = new FormData()
     fd.append('img_data', imageBlob)
 
-    const response = await fetch('http://localhost:3000/u', {
+    fetch('http://localhost:3000/u', {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -79,8 +87,7 @@ async function uploadImageToServer(imageBlob, callback) {
             'Content-length': imageBlob.size
         },
         body: fd
-    })
-    callback(response)
+    }).then(callback)
 }
 
 function uploadDoneCallback(response) {
@@ -91,13 +98,13 @@ var photo = document.getElementById("photo")
 var fileinput = document.getElementById("fp")
 var rotDegInput = document.getElementById("rotDeg")
 var reader = new FileReader()
-reader.addEventListener("loadend", e => {
+reader.addEventListener("loadend", function(e) {
     // alert("loaded to fp: " + e.target.result)
     var imageAsDataURL = e.target.result
-    rotateImage(imageAsDataURL, parseInt(rotDegInput.value, 10), ri => {
+    rotateImage(imageAsDataURL, parseInt(rotDegInput.value, 10), function(ri) {
         // console.log(ri)
         photo.src = ri
-        convertCanvasImageToBlob(imageBlob => {
+        convertCanvasImageToBlob(function(imageBlob) {
             uploadImageToServer(imageBlob, uploadDoneCallback)
         })
     })
