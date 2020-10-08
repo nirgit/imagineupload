@@ -27,5 +27,5 @@ app.post('/u', upload.single('img_data'), (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Image server http://localhost:${port}`)
+  console.log(`Image server on ${port}`)
 })
