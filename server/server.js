@@ -6,7 +6,7 @@ const multer = require('multer') // v1.0.5
 const upload = multer()
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 app.use(bodyParser.urlencoded({ extended: true }))
 
