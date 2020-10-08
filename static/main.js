@@ -6,15 +6,8 @@ function convertCanvasImageToBlob(callback) {
     getCanvas().toBlob(callback, "image/jpeg");
 }
 
-function getExifRotation(imageDataURL) {
-
-}
-
-function rotateImage(dataURL, degrees, supportExif, callback) {
+function rotateImage(dataURL, degrees, callback) {
     var image = new Image();
-    if (supportExif) {
-        degrees = getExifRotation(dataURL)
-    }
     image.src = dataURL;
     image.onload =
         function (event) {
@@ -78,7 +71,8 @@ function uploadImageToServer(imageBlob, callback) {
     var fd = new FormData()
     fd.append('img_data', imageBlob)
 
-    fetch('http://localhost:3000/u', {
+
+    fetch(document.location.origin + '/u', {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -96,7 +90,7 @@ function uploadDoneCallback(response) {
 
 var photo = document.getElementById("photo")
 var fileinput = document.getElementById("fp")
-var rotDegInput = document.getElementById("rotDeg")
+var rotDegInput = document.getElementById("rotDeg") || {}
 var reader = new FileReader()
 reader.addEventListener("loadend", function(e) {
     // alert("loaded to fp: " + e.target.result)
